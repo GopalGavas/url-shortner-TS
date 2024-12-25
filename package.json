@@ -1,0 +1,36 @@
+{
+  "name": "url-shortner-with-ts",
+  "version": "1.0.0",
+  "description": "a url-shortner-project with nodejs typescript mongoose and mongodb",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "dev": "nodemon --watch src --ext ts --exec ts-node src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "keywords": [
+    "nodejs",
+    "typescript",
+    "mongodb",
+    "mongoose"
+  ],
+  "author": "Gopal Gavas",
+  "license": "ISC",
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.2"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.2",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.4.2",
+    "ts-node": "^10.9.2"
+  }
+}
