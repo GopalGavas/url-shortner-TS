@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import validator from "validator";
 
 export interface IUser extends Document {
   fullName: string;
@@ -26,6 +27,10 @@ const userSchema: Schema<IUser> = new Schema(
     email: {
       type: String,
       required: true,
+      unique: true,
+      trim: true,
+      index: true,
+      validate: validator.isEmail,
     },
 
     role: {
@@ -38,6 +43,7 @@ const userSchema: Schema<IUser> = new Schema(
     password: {
       type: String,
       required: true,
+      minlength: [8, "Password should atleast contain 8 characters"],
     },
 
     refreshToken: {

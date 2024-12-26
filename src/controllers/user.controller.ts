@@ -5,6 +5,7 @@ import { User, IUser } from "../models/user.model";
 import { Request, Response } from "express";
 import mongoose from "mongoose";
 
+// Interface for sending Token Response
 interface TokenResponse {
   accessToken: string;
   refreshToken: string;
@@ -115,12 +116,13 @@ const loginUser = asyncHandler(
   }
 );
 
+// Authenticated Request to add user Model to the Request Field
 interface AuthenticatedRequest extends Request {
   user?: IUser;
 }
 
 const logoutUser = asyncHandler(
-  async (req: AuthenticatedRequest, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     // Ensure `req.user` exists (TypeScript guard)
     if (!req.user) {
       throw new ApiError(401, "User not authenticated");
@@ -151,4 +153,100 @@ const logoutUser = asyncHandler(
       .json(new ApiResponse(200, null, "User logged out successfully"));
   }
 );
-export { registerUser, loginUser, logoutUser };
+
+const getCurrentUser = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, req.user, "Current User fetched Successfully")
+      );
+  }
+);
+
+const updateUserDetails = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { email, fullName } = req.body as {
+      email: string;
+      fullName: string;
+    };
+
+    if (!email && !fullName) {
+      throw new ApiError(
+        400,
+        "You must provide at least one field to update (email or fullName)"
+      );
+    }
+
+    if (email) {
+      const existingEmail = await User.findOne({ email });
+
+      if (
+        existingEmail &&
+        existingEmail?._id?.toString() !== req.user?._id?.toString()
+      ) {
+        throw new ApiError(400, "Email is already taken");
+      }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user?._id,
+      {
+        $set: {
+          ...(email && { email }),
+          ...(fullName && { fullName }),
+        },
+      },
+      {
+        new: true,
+        select: "_id email fullName",
+      }
+    );
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, updatedUser, "User updated successfully"));
+  }
+);
+
+const updateUserPassword = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { oldPassword, newPassword } = req.body as {
+      oldPassword: string;
+      newPassword: string;
+    };
+
+    if (!oldPassword || !newPassword) {
+      throw new ApiError(400, "Both Passwords are required");
+    }
+
+    const user = await User.findById(req.user?._id);
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    const isPasswordValid = await user.isPasswordCorrect(oldPassword);
+
+    if (!isPasswordValid) {
+      throw new ApiError(400, "Ivalid Password");
+    }
+
+    user.password = newPassword;
+
+    await user.save({ validateBeforeSave: false });
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, null, "Password updated successfully"));
+  }
+);
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  getCurrentUser,
+  updateUserDetails,
+  updateUserPassword,
+};
