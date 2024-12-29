@@ -1,13 +1,19 @@
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/apiError";
 import { ApiResponse } from "../utils/apiResponse";
-import { URL } from "../models/url.model";
-import { nanoid } from "nanoid";
+import { IUrl, URL } from "../models/url.model";
+import { IUser } from "../models/user.model";
+import shortid from "shortid";
 import { Request, Response } from "express";
-import mongoose from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
+
+// Authenticated Request to add user Model to the Request Field
+interface AuthenticatedRequest extends Request {
+  user?: IUser;
+}
 
 const createShortId = asyncHandler(
-  async (req: Request, res: Response): Promise<void> => {
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     const { originalUrl } = req.body as { originalUrl: string };
 
     if (!originalUrl) {
@@ -17,7 +23,7 @@ const createShortId = asyncHandler(
       );
     }
 
-    const urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w-]*)*$/;
+    const urlPattern = /^(https?:\/\/)([\w.-]+)(\.[a-z]{2,})([\/\w.-]*)*\/?$/i;
 
     if (!urlPattern.test(originalUrl)) {
       throw new ApiError(400, "Provide a valid Url");
@@ -34,7 +40,7 @@ const createShortId = asyncHandler(
       return undefined;
     }
 
-    const shortId = nanoid(8);
+    const shortId = shortid.generate();
 
     const shortUrl = await URL.create({
       shortId,
@@ -43,15 +49,19 @@ const createShortId = asyncHandler(
       createdBy: req.user?._id,
     });
 
+    const fullShortURL = `${process.env.BASE_URL}/${shortUrl.shortId}`;
+
     res
       .status(201)
-      .json(new ApiResponse(200, shortUrl, "Short Url generated successfully"));
+      .json(
+        new ApiResponse(200, fullShortURL, "Short Url generated successfully")
+      );
   }
 );
 
 const redirectUrl = asyncHandler(
-  async (req: Request, res: Response): Promise<void> => {
-    const { shortId } = req.params;
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { shortId } = req.params as { shortId: string };
 
     if (!shortId) {
       throw new ApiError(400, "Enter valid short Id");
@@ -67,7 +77,10 @@ const redirectUrl = asyncHandler(
       url.visibility === "private" &&
       String(url.createdBy) !== String(req.user?._id)
     ) {
-      throw new ApiError(403, "You are not authorized  for this request");
+      throw new ApiError(
+        403,
+        "This URL is private, and you are not authorized to view it"
+      );
     }
 
     const entry = await URL.findOneAndUpdate(
@@ -96,7 +109,7 @@ const redirectUrl = asyncHandler(
 );
 
 const toggleVisibilityStatus = asyncHandler(
-  async (req: Request, res: Response): Promise<void> => {
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     const { urlId } = req.params;
 
     if (!mongoose.isValidObjectId(urlId)) {
@@ -110,7 +123,7 @@ const toggleVisibilityStatus = asyncHandler(
     }
 
     if (
-      String(url.createdBy) !== String(req.user?._id) &&
+      String(url.createdBy) !== String(req.user?._id) ||
       req.user?.role !== "admin"
     ) {
       throw new ApiError(401, "You are not authorised for this action");
@@ -139,4 +152,108 @@ const toggleVisibilityStatus = asyncHandler(
   }
 );
 
-export { createShortId, redirectUrl, toggleVisibilityStatus };
+const deleteUrl = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { urlId } = req.params as { urlId: string };
+
+    if (!isValidObjectId(urlId)) {
+      throw new ApiError(400, "Invalid URL Id provided");
+    }
+
+    const url = await URL.findById(urlId);
+
+    if (!url) {
+      throw new ApiError(404, "URL not found");
+    }
+
+    if (
+      String(url?.createdBy) !== String(req.user?._id) ||
+      req.user?.role !== "admin"
+    ) {
+      throw new ApiError(401, "You are not authorised for this action");
+    }
+
+    await URL.findByIdAndDelete(urlId);
+
+    res.status(200).json(new ApiResponse(200, {}, "URL deleted successfully"));
+  }
+);
+
+const getUrlById = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const { urlId } = req.params as { urlId: string };
+
+    if (!isValidObjectId(urlId)) {
+      throw new ApiError(400, "Invalid URL Id provided");
+    }
+
+    const url = (await URL.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(urlId),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "user_details",
+        },
+      },
+      {
+        $addFields: {
+          totalClicks: {
+            $size: "$visitHistory",
+          },
+          uniqueVisitors: {
+            $size: {
+              $setUnion: ["$visitHistory.visitor", []],
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          shortId: 1,
+          redirectUrl: 1,
+          createdBy: 1,
+          totalClicks: 1,
+          uniqueVisitors: 1,
+          "user_details.fullName": 1,
+          "user_details.email": 1,
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      },
+    ])) as (Pick<
+      IUrl,
+      | "_id"
+      | "shortId"
+      | "redirectUrl"
+      | "createdBy"
+      | "createdAt"
+      | "updatedAt"
+    > & {
+      totalClicks: number;
+      uniqueVisitors: number;
+      user_details: { fullName: string; email: string }[];
+    })[];
+
+    if (!url || url.length === 0) {
+      throw new ApiError(404, "URL not found");
+    }
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, url[0], "URL fetched successfully"));
+  }
+);
+
+export {
+  createShortId,
+  redirectUrl,
+  toggleVisibilityStatus,
+  deleteUrl,
+  getUrlById,
+};
