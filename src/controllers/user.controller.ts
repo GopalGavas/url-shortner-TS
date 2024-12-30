@@ -59,6 +59,8 @@ const registerUser = asyncHandler(
       password,
     });
 
+    user.addActivityLog(`User registered with email: ${user.email}`);
+
     res
       .status(201)
       .json(new ApiResponse(201, user, "User created successfully"));
@@ -85,6 +87,16 @@ const loginUser = asyncHandler(
       throw new ApiError(404, "User not found");
     }
 
+    if (user.userStatusType === "blocked") {
+      user.addActivityLog("Blocked account attempted login");
+      throw new ApiError(403, "Your account is blocked by the admin");
+    }
+
+    if (user.userStatusType === "suspended") {
+      user.addActivityLog("Suspended account attempted login");
+      throw new ApiError(403, "Your account is suspended");
+    }
+
     const isPasswordValid = await user.isPasswordCorrect(password);
 
     if (!isPasswordValid) {
@@ -97,6 +109,7 @@ const loginUser = asyncHandler(
       );
 
     user.refreshToken = refreshToken;
+    user.status = "active";
     await user.save();
 
     const loggedInUser = await User.findById(user?._id).select(
@@ -133,6 +146,7 @@ const logoutUser = asyncHandler(
       {
         $set: {
           refreshToken: undefined,
+          status: "inactive",
         },
       },
       {
@@ -145,6 +159,8 @@ const logoutUser = asyncHandler(
       secure: true,
     };
 
+    req.user?.addActivityLog(`User logged out with email: ${req.user.email}`);
+
     // Clear cookies on the client side
     res
       .status(200)
@@ -156,6 +172,10 @@ const logoutUser = asyncHandler(
 
 const getCurrentUser = asyncHandler(
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    req.user?.addActivityLog(
+      `Fetched current user details for email: ${req.user.email}`
+    );
+
     res
       .status(200)
       .json(
@@ -203,6 +223,10 @@ const updateUserDetails = asyncHandler(
       }
     );
 
+    req.user?.addActivityLog(
+      `User updated details with email: ${req.user.email}`
+    );
+
     res
       .status(200)
       .json(new ApiResponse(200, updatedUser, "User updated successfully"));
@@ -235,6 +259,10 @@ const updateUserPassword = asyncHandler(
     user.password = newPassword;
 
     await user.save({ validateBeforeSave: false });
+
+    req.user?.addActivityLog(
+      `User updated password for email: ${req.user.email}`
+    );
 
     res
       .status(200)

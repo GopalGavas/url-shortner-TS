@@ -9,12 +9,16 @@ export interface IUser extends Document {
   role: string;
   password: string;
   refreshToken: string;
+  status: string;
+  userStatusType: string;
+  activityLogs: Array<any>;
   createdAt: Date;
   updatedAt: Date;
 
   isPasswordCorrect(password: string): boolean;
   generateAccessToken(): string;
   generateRefreshToken(): string;
+  addActivityLog(activity: string): void;
 }
 
 const userSchema: Schema<IUser> = new Schema(
@@ -48,6 +52,36 @@ const userSchema: Schema<IUser> = new Schema(
 
     refreshToken: {
       type: String,
+    },
+
+    status: {
+      type: String,
+      required: true,
+      enum: ["active", "inactive"],
+      default: "active",
+    },
+
+    userStatusType: {
+      type: String,
+      required: true,
+      enum: ["block", "suspended", "normal"],
+      default: "normal",
+    },
+
+    activityLogs: {
+      type: [
+        {
+          timestamp: {
+            type: Date,
+            default: Date.now,
+          },
+          activity: {
+            type: String,
+            required: true,
+          },
+        },
+      ],
+      default: [],
     },
   },
   {
@@ -92,6 +126,11 @@ userSchema.methods.generateRefreshToken = function () {
       expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
     }
   );
+};
+
+userSchema.methods.addActivityLog = function (activity: string): void {
+  this.activityLogs.push({ activity });
+  this.save();
 };
 
 export const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);

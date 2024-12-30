@@ -51,6 +51,10 @@ const createShortId = asyncHandler(
 
     const fullShortURL = `${process.env.BASE_URL}/${shortUrl.shortId}`;
 
+    req.user?.addActivityLog(
+      `User with email: ${req.user?.email} generated a short URL for ${originalUrl}`
+    );
+
     res.status(201).json(
       new ApiResponse(
         200,
@@ -101,6 +105,10 @@ const redirectUrl = asyncHandler(
       { new: true }
     );
 
+    req.user?.addActivityLog(
+      `User with email: ${req.user?.email} accessed short URL: ${shortId}, redirected to: ${url.redirectUrl}`
+    );
+
     res.redirect(entry.redirectUrl);
   }
 );
@@ -145,6 +153,10 @@ const toggleVisibilityStatus = asyncHandler(
         ? "URL status changed to public successfully"
         : "URL status changed to private successfully";
 
+    req.user?.addActivityLog(
+      `User with email: ${req.user?.email} changed visibility of URL ${urlId} to ${newVisibility}`
+    );
+
     res.status(200).json(
       new ApiResponse(
         200,
@@ -179,6 +191,10 @@ const deleteUrl = asyncHandler(
     }
 
     await URL.findByIdAndDelete(urlId);
+
+    req.user?.addActivityLog(
+      `User with email: ${req.user?.email} deleted URL with ID: ${urlId}`
+    );
 
     res.status(200).json(new ApiResponse(200, {}, "URL deleted successfully"));
   }
@@ -248,6 +264,10 @@ const getUrlById = asyncHandler(
     if (!url || url.length === 0) {
       throw new ApiError(404, "URL not found");
     }
+
+    req.user?.addActivityLog(
+      `User with email: ${req.user?.email} viewed details of URL with ID: ${urlId}`
+    );
 
     res
       .status(200)
