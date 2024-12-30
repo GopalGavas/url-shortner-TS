@@ -51,11 +51,16 @@ const createShortId = asyncHandler(
 
     const fullShortURL = `${process.env.BASE_URL}/${shortUrl.shortId}`;
 
-    res
-      .status(201)
-      .json(
-        new ApiResponse(200, fullShortURL, "Short Url generated successfully")
-      );
+    res.status(201).json(
+      new ApiResponse(
+        200,
+        {
+          tinyUrl: fullShortURL,
+          shortUrl,
+        },
+        "Short Url generated successfully"
+      )
+    );
   }
 );
 
@@ -96,15 +101,7 @@ const redirectUrl = asyncHandler(
       { new: true }
     );
 
-    res
-      .status(200)
-      .json(
-        new ApiResponse(
-          200,
-          entry,
-          "Visit logged successfully. Redirect Url fetched"
-        )
-      );
+    res.redirect(entry.redirectUrl);
   }
 );
 
@@ -123,7 +120,7 @@ const toggleVisibilityStatus = asyncHandler(
     }
 
     if (
-      String(url.createdBy) !== String(req.user?._id) ||
+      String(url.createdBy) !== String(req.user?._id) &&
       req.user?.role !== "admin"
     ) {
       throw new ApiError(401, "You are not authorised for this action");
@@ -148,7 +145,15 @@ const toggleVisibilityStatus = asyncHandler(
         ? "URL status changed to public successfully"
         : "URL status changed to private successfully";
 
-    res.status(200).json(new ApiResponse(200, null, message));
+    res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          urlStatus: newVisibility,
+        },
+        message
+      )
+    );
   }
 );
 
@@ -167,7 +172,7 @@ const deleteUrl = asyncHandler(
     }
 
     if (
-      String(url?.createdBy) !== String(req.user?._id) ||
+      String(url?.createdBy) !== String(req.user?._id) &&
       req.user?.role !== "admin"
     ) {
       throw new ApiError(401, "You are not authorised for this action");

@@ -1,10 +1,19 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware";
-import { createShortId, redirectUrl } from "../controllers/url.controller";
+import {
+  createShortId,
+  deleteUrl,
+  getUrlById,
+  toggleVisibilityStatus,
+} from "../controllers/url.controller";
 
 const router = Router();
 
-router.route("/").post(verifyJWT, createShortId);
-router.route("/").get(verifyJWT, redirectUrl);
+router.use(verifyJWT);
+
+router.route("/").post(createShortId);
+router.route("/:urlId").patch(toggleVisibilityStatus);
+router.route("/:urlId").delete(deleteUrl);
+router.route("/:urlId").get(getUrlById);
 
 export default router;

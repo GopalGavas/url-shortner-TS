@@ -22,8 +22,13 @@ app.use(cookieParser());
 // "ROUTES"
 import userRouter from "./routes/user.routes";
 import urlRouter from "./routes/url.routes";
+import { redirectUrl } from "./controllers/url.controller";
 
+// "API ROUTES"
 app.use("/users", userRouter);
 app.use("/urls", urlRouter);
+
+// "Resolve Short Url Route"
+app.get("/:shortId", redirectUrl);
 
 export { app };

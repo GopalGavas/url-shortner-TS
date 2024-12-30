@@ -47,4 +47,15 @@ const verifyJWT = asyncHandler(
   }
 );
 
-export { verifyJWT };
+const isAdmin = asyncHandler(
+  async (req: AuthenticatedRequest, _, next: NextFunction) => {
+    const user = await User.findById(req.user?._id);
+
+    if (!user || user.role.toLowerCase() !== "admin") {
+      throw new ApiError(403, "Access not granted since you are not a Admin");
+    }
+    next();
+  }
+);
+
+export { verifyJWT, isAdmin };
