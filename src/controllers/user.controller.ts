@@ -87,7 +87,7 @@ const loginUser = asyncHandler(
       throw new ApiError(404, "User not found");
     }
 
-    if (user.userStatusType === "blocked") {
+    if (user.userStatusType === "block") {
       user.addActivityLog("Blocked account attempted login");
       throw new ApiError(403, "Your account is blocked by the admin");
     }
@@ -121,11 +121,22 @@ const loginUser = asyncHandler(
       secure: true,
     };
 
+    if (user.role === "admin") {
+      user.addActivityLog(`Admin logged in with email: ${user.email}`);
+    } else {
+      user.addActivityLog(`User logged in with email: ${user.email}`);
+    }
+
+    const responseMessage =
+      user.role === "admin"
+        ? "Admin logged in successfully"
+        : "User logged in successfully";
+
     res
       .status(200)
       .cookie("accessToken", accessToken, options)
       .cookie("refreshToken", refreshToken, options)
-      .json(new ApiResponse(200, loggedInUser, "User logged In successfully"));
+      .json(new ApiResponse(200, loggedInUser, responseMessage));
   }
 );
 

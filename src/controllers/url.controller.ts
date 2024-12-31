@@ -105,6 +105,10 @@ const redirectUrl = asyncHandler(
       { new: true }
     );
 
+    if (!entry) {
+      throw new ApiError(500, "Failed to update visit history for the URL");
+    }
+
     req.user?.addActivityLog(
       `User with email: ${req.user?.email} accessed short URL: ${shortId}, redirected to: ${url.redirectUrl}`
     );

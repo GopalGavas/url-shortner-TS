@@ -40,8 +40,8 @@ const userSchema: Schema<IUser> = new Schema(
     role: {
       type: String,
       required: true,
-      default: "USER",
-      enum: ["USER", "ADMIN"],
+      default: "user",
+      enum: ["user", "admin"],
     },
 
     password: {
