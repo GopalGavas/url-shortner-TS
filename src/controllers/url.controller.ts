@@ -84,7 +84,8 @@ const redirectUrl = asyncHandler(
 
     if (
       url.visibility === "private" &&
-      String(url.createdBy) !== String(req.user?._id)
+      String(url.createdBy) !== String(req.user?._id) &&
+      req.user?.role !== "admin"
     ) {
       throw new ApiError(
         403,
@@ -173,7 +174,7 @@ const toggleVisibilityStatus = asyncHandler(
   }
 );
 
-const deleteUrl = asyncHandler(
+const deleteUrlById = asyncHandler(
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     const { urlId } = req.params as { urlId: string };
 
@@ -283,6 +284,6 @@ export {
   createShortId,
   redirectUrl,
   toggleVisibilityStatus,
-  deleteUrl,
+  deleteUrlById,
   getUrlById,
 };
