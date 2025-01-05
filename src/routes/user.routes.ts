@@ -8,11 +8,12 @@ import {
   updateUserPassword,
 } from "../controllers/user.controller";
 import { verifyJWT } from "../middlewares/auth.middleware";
+import { loginAndRegisterLimiter } from "../middlewares/rateLimiter.middleware";
 
 const router = Router();
 
-router.route("/register").post(registerUser);
-router.route("/login").post(loginUser);
+router.route("/register").post(loginAndRegisterLimiter, registerUser);
+router.route("/login").post(loginAndRegisterLimiter, loginUser);
 
 // {Safe Routes}
 router.route("/logout").post(verifyJWT, logoutUser);

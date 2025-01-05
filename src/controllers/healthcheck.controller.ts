@@ -3,7 +3,7 @@ import { ApiResponse } from "../utils/apiResponse";
 import { Request, Response } from "express";
 
 const healthCheckController = asyncHandler(
-  async (_: Request, res: Response) => {
+  async (_: Request, res: Response): Promise<void> => {
     res
       .status(200)
       .json(

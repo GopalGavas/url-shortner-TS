@@ -4,7 +4,17 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import logger from "./utils/logger";
 
+// "SECURITY PACKAGES"
+import { globalLimiter } from "./middlewares/rateLimiter.middleware";
+import ExpressMongoSanitize from "express-mongo-sanitize";
+import helmet from "helmet";
+
 const app = express();
+
+// "SECURITY MIDDLEWARES"
+app.use(globalLimiter);
+app.use(helmet());
+app.use(ExpressMongoSanitize());
 
 // "MIDDLEWARES"
 app.use(
