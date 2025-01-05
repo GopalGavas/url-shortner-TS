@@ -2,15 +2,10 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/apiError";
 import { ApiResponse } from "../utils/apiResponse";
 import { IUrl, URL } from "../models/url.model";
-import { IUser } from "../models/user.model";
 import shortid from "shortid";
-import { Request, Response } from "express";
+import { Response } from "express";
 import mongoose, { isValidObjectId } from "mongoose";
-
-// Authenticated Request to add user Model to the Request Field
-interface AuthenticatedRequest extends Request {
-  user?: IUser;
-}
+import { AuthenticatedRequest } from "../interface/authenticatedRequest";
 
 const createShortId = asyncHandler(
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {

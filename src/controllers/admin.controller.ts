@@ -1,15 +1,11 @@
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/apiError";
 import { ApiResponse } from "../utils/apiResponse";
-import { User, IUser } from "../models/user.model";
+import { User } from "../models/user.model";
 import { URL } from "../models/url.model";
-import { Request, Response } from "express";
+import { Response } from "express";
 import mongoose, { isValidObjectId } from "mongoose";
-
-// Authenticated Request to add user Model to the Request Field
-interface AuthenticatedRequest extends Request {
-  user?: IUser;
-}
+import { AuthenticatedRequest } from "../interface/authenticatedRequest";
 
 //////// {Admin: User Management Routes}
 const updateUserRole = asyncHandler(

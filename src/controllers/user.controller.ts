@@ -1,9 +1,10 @@
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/apiError";
 import { ApiResponse } from "../utils/apiResponse";
-import { User, IUser } from "../models/user.model";
+import { User } from "../models/user.model";
 import { Request, Response } from "express";
 import mongoose from "mongoose";
+import { AuthenticatedRequest } from "../interface/authenticatedRequest";
 
 // Interface for sending Token Response
 interface TokenResponse {
@@ -140,11 +141,7 @@ const loginUser = asyncHandler(
   }
 );
 
-// Authenticated Request to add user Model to the Request Field
-interface AuthenticatedRequest extends Request {
-  user?: IUser;
-}
-
+// "Authenticated Request to add user Model to the Request Field"
 const logoutUser = asyncHandler(
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     // Ensure `req.user` exists (TypeScript guard)
