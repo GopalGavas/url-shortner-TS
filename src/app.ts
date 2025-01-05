@@ -24,6 +24,7 @@ import userRouter from "./routes/user.routes";
 import urlRouter from "./routes/url.routes";
 import adminRouter from "./routes/admin.routes";
 import { redirectUrl } from "./controllers/url.controller";
+import { verifyJWT } from "./middlewares/auth.middleware";
 
 // "API ROUTES"
 app.use("/users", userRouter);
@@ -31,6 +32,6 @@ app.use("/urls", urlRouter);
 app.use("/admin", adminRouter);
 
 // "Resolve Short Url Route"
-app.get("/:shortId", redirectUrl);
+app.get("/:shortId", verifyJWT, redirectUrl);
 
 export { app };

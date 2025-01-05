@@ -113,7 +113,7 @@ const loginUser = asyncHandler(
     await user.save();
 
     const loggedInUser = await User.findById(user?._id).select(
-      "-password -refreshToken"
+      "-password -refreshToken -activityLogs"
     );
 
     const options = {
@@ -170,14 +170,25 @@ const logoutUser = asyncHandler(
       secure: true,
     };
 
-    req.user?.addActivityLog(`User logged out with email: ${req.user.email}`);
+    if (req.user?.role === "admin") {
+      req.user?.addActivityLog(
+        `Admin logged out with email: ${req.user.email}`
+      );
+    } else {
+      req.user?.addActivityLog(`User logged out with email: ${req.user.email}`);
+    }
+
+    const responseMessage =
+      req.user?.role === "admin"
+        ? "Admin logged out successfully"
+        : "User logged out successfully";
 
     // Clear cookies on the client side
     res
       .status(200)
       .clearCookie("accessToken", options)
       .clearCookie("refreshToken", options)
-      .json(new ApiResponse(200, null, "User logged out successfully"));
+      .json(new ApiResponse(200, null, responseMessage));
   }
 );
 
@@ -187,10 +198,16 @@ const getCurrentUser = asyncHandler(
       `Fetched current user details for email: ${req.user.email}`
     );
 
+    const { activityLogs, ...withoutActivityLogs } = req.user?.toObject() || {};
+
     res
       .status(200)
       .json(
-        new ApiResponse(200, req.user, "Current User fetched Successfully")
+        new ApiResponse(
+          200,
+          withoutActivityLogs,
+          "Current User fetched Successfully"
+        )
       );
   }
 );

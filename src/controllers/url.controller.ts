@@ -85,7 +85,7 @@ const redirectUrl = asyncHandler(
     if (
       url.visibility === "private" &&
       String(url.createdBy) !== String(req.user?._id) &&
-      req.user?.role !== "admin"
+      req.user?.role?.toLowerCase() !== "admin"
     ) {
       throw new ApiError(
         403,
@@ -280,10 +280,81 @@ const getUrlById = asyncHandler(
   }
 );
 
+const getAllUrlsOfUser = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const { page = 1, limit = 10 } = req.query as {
+      page: string;
+      limit: string;
+    };
+
+    const pageNumber = Math.max(1, Number(page));
+    const limitNumber = Math.max(1, Number(limit));
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const allUrls = await URL.aggregate([
+      {
+        $match: {
+          createdBy: new mongoose.Types.ObjectId(
+            req.user?._id as mongoose.Types.ObjectId
+          ),
+        },
+      },
+      {
+        $addFields: {
+          totalClicks: {
+            $size: "$visitHistory",
+          },
+        },
+      },
+      {
+        $project: {
+          shortId: 1,
+          redirectUrl: 1,
+          visitHistory: 1,
+          totalClicks: 1,
+          visibility: 1,
+        },
+      },
+      { $skip: skip },
+      { $limit: limitNumber },
+    ]);
+
+    if (!allUrls || allUrls.length === 0) {
+      throw new ApiError(500, "Something went wrong while fetching the URLS");
+    }
+
+    const totalUrls = await URL.countDocuments({
+      createdBy: req.user?._id,
+    }).exec();
+
+    req.user?.addActivityLog(
+      `User with email: ${req.user?.email} fetched their URLs. Page: ${pageNumber}, Limit: ${limitNumber}, URLs retrieved: ${allUrls.length}`
+    );
+
+    const pagination = {
+      totalUrls,
+      totalPages: Math.ceil(totalUrls / limitNumber),
+      currentPage: pageNumber,
+      limit: limitNumber,
+    };
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { urls: totalUrls, pagination },
+          "All Urls fetched successfully"
+        )
+      );
+  }
+);
+
 export {
   createShortId,
   redirectUrl,
   toggleVisibilityStatus,
   deleteUrlById,
   getUrlById,
+  getAllUrlsOfUser,
 };
