@@ -338,7 +338,7 @@ const getAllUrlsOfUser = asyncHandler(
       .json(
         new ApiResponse(
           200,
-          { urls: totalUrls, pagination },
+          { urls: allUrls, pagination },
           "All Urls fetched successfully"
         )
       );

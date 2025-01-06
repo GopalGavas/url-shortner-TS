@@ -71,6 +71,7 @@ app.use(
 import userRouter from "./routes/user.routes";
 import urlRouter from "./routes/url.routes";
 import adminRouter from "./routes/admin.routes";
+import healthCheckRouter from "./routes/healthcheck.routes";
 import { redirectUrl } from "./controllers/url.controller";
 import { verifyJWT } from "./middlewares/auth.middleware";
 
@@ -78,6 +79,7 @@ import { verifyJWT } from "./middlewares/auth.middleware";
 app.use("/users", userRouter);
 app.use("/urls", urlRouter);
 app.use("/admin", adminRouter);
+app.use("/healthcheck", healthCheckRouter);
 
 // "Resolve Short Url Route"
 app.get("/:shortId", verifyJWT, redirectUrl);
