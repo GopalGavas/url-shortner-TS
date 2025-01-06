@@ -44,7 +44,7 @@ const createShortId = asyncHandler(
       createdBy: req.user?._id,
     });
 
-    const fullShortURL = `${process.env.BASE_URL}/${shortUrl.shortId}`;
+    const fullShortURL = `${process.env.PROD_URL}/${shortUrl.shortId}`;
 
     req.user?.addActivityLog(
       `User with email: ${req.user?.email} generated a short URL for ${originalUrl}`
