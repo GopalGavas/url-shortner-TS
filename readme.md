@@ -1,4 +1,4 @@
-# **QuickURL (URL Shortener)**
+# ⚡**QuickURL (URL Shortener)**
 
 A backend application that enables users to generate shortened URLs for long links. The project incorporates modern web development practices, robust security measures, and advanced features for scalability and ease of use.
 
@@ -20,13 +20,13 @@ A backend application that enables users to generate shortened URLs for long lin
 
 ---
 
-## **Overview**
+## 📖**Overview**
 
 The **QuickURL** project provides users with the ability to shorten long URLs, making them easier to share and manage. It uses secure authentication, rate limiting, input validation, and advanced features like URL visibility control and user-specific URL management. Admin features ensure better management of users and URLs.
 
 ---
 
-## **Features**
+## ✨**Features**
 
 ### **User Management**
 
@@ -50,7 +50,7 @@ The **QuickURL** project provides users with the ability to shorten long URLs, m
 
 ---
 
-### **Security**
+### 🔐**Security**
 
 - **Rate Limiting**: Prevent excessive requests with global rate limiting and specific limits for login, registration, and URL creation.
 - **Input Validation**: Ensure secure data handling with server-side validation.
@@ -60,7 +60,7 @@ The **QuickURL** project provides users with the ability to shorten long URLs, m
 
 ---
 
-## **Tech Stack**
+## 🛠️**Tech Stack**
 
 - **Languages**: TypeScript, JavaScript.
 - **Backend Framework**: Express.js.
@@ -73,7 +73,7 @@ The **QuickURL** project provides users with the ability to shorten long URLs, m
 
 ---
 
-## **Installation**
+## 🔽**Installation**
 
 To run the URL Shortener project locally:
 
@@ -111,7 +111,7 @@ The application will now be running at `http://localhost:8000`.
 
 ---
 
-## 📋 **API Endpoints**
+## 📋**API Endpoints**
 
 | Endpoint       | Description                                    |
 | -------------- | ---------------------------------------------- |
@@ -122,7 +122,7 @@ The application will now be running at `http://localhost:8000`.
 
 ---
 
-## 🤝 Contribution
+## 🤝**Contribution**
 
 We welcome contributions to **QuickURL**! If you'd like to contribute, please follow these steps:
 
@@ -150,12 +150,12 @@ We welcome contributions to **QuickURL**! If you'd like to contribute, please fo
 
 ---
 
-## 📜 License
+## 📜**License**
 
 This project is licensed under the ISC License.
 
 ---
 
-## 👤 Author
+## 👤**Author**
 
 **[Gopal Gavas](https://github.com/GopalGavas)**
