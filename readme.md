@@ -14,8 +14,9 @@ A backend application that enables users to generate shortened URLs for long lin
   - [Security](#security)
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
-- [Contributing](#contributing)
+- [Contribution](#contribution)
 - [License](#license)
+- [Author](#author)
 
 ---
 
@@ -46,6 +47,8 @@ The **QuickURL** project provides users with the ability to shorten long URLs, m
 
 - **Manage Users**: Admin can block, fetch or delete users.
 - **Manage URLs**: Admin can delete or retrieve all URLs with advanced filters.
+
+---
 
 ### **Security**
 
@@ -121,21 +124,28 @@ The application will now be running at `http://localhost:8000`.
 
 ## 🤝 Contribution
 
-We welcome contributions to **SwiftMart**! If you'd like to contribute, please follow these steps:
+We welcome contributions to **QuickURL**! If you'd like to contribute, please follow these steps:
 
 1. **Fork** the repository.
+
 2. Create a **new branch**:
+
    ```bash
    git checkout -b feature-name
    ```
+
 3. **Make your changes** and commit them:
+
    ```bash
    git commit -am 'Add feature'
    ```
+
 4. **Push** to the branch:
+
    ```bash
    git push origin feature-name
    ```
+
 5. **Create a new pull request** with a clear description of what changes you’ve made and why they are beneficial.
 
 ---
@@ -148,4 +158,4 @@ This project is licensed under the ISC License.
 
 ## 👤 Author
 
-**Gopal Gavas(https://github.com/GopalGavas)**
+**[Gopal Gavas](https://github.com/GopalGavas)**
