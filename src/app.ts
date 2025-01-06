@@ -13,7 +13,23 @@ const app = express();
 
 // "SECURITY MIDDLEWARES"
 app.use(globalLimiter);
-app.use(helmet());
+
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      useDefaults: true, // enables default CSP
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+      },
+    },
+    frameguard: { action: "deny" },
+    referrerPolicy: { policy: "no-referrer" },
+  })
+);
+
 app.use(ExpressMongoSanitize());
 
 // "MIDDLEWARES"

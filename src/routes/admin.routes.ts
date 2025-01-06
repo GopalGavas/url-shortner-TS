@@ -2,6 +2,7 @@ import { Router } from "express";
 import { isAdmin, verifyJWT } from "../middlewares/auth.middleware";
 import {
   getAllUrls,
+  getUserById,
   toggleUserStatus,
   updateUserRole,
   urlBatchDelete,
@@ -17,6 +18,7 @@ router.use(verifyJWT, isAdmin);
 router.route("/users/:userId/role").patch(updateUserRole);
 router.route("/users/:userId/activity").get(viewUserActivityLogs);
 router.route("/users/:userId/status").patch(toggleUserStatus);
+router.route("/users/:userId").get(getUserById);
 
 // "ADMIN URL MANAGEMENT ROUTES"
 router.route("/urls/:urlId").get(getUrlById);

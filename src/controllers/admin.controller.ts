@@ -130,6 +130,30 @@ const toggleUserStatus = asyncHandler(
   }
 );
 
+const getUserById = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const { userId } = req.params as { userId: string };
+
+    if (!isValidObjectId(userId)) {
+      throw new ApiError(400, "Invalid User Id");
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    req.user?.addActivityLog(
+      `Admin with email ${req.user?.email} fetched details of a user with email ${user.email}`
+    );
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, user, "User fetched successfully"));
+  }
+);
+
 //////// {Admin: Url Management Routes}
 const urlBatchDelete = asyncHandler(
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
@@ -271,6 +295,7 @@ export {
   updateUserRole,
   viewUserActivityLogs,
   toggleUserStatus,
+  getUserById,
   urlBatchDelete,
   getAllUrls,
 };
