@@ -12,7 +12,7 @@ A backend application that enables users to generate shortened URLs for long lin
   - [URL Management](#url-management)
   - [Admin Features](#admin-features)
   - [Security](#security)
-- [Tech Stack](#tech-stack)
+- [Tech Stack](#️tech-stack)
 - [Installation](#installation)
 - [Contribution](#contribution)
 - [License](#license)
