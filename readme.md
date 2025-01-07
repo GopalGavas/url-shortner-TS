@@ -27,7 +27,7 @@ The **SwiftLink** project provides users with the ability to shorten long URLs, 
 
 ---
 
-### 🌐**Quick Links**{#quick-links}
+### 🌐**Quick Links**
 
 | Resource              | Link                                                                            |
 | --------------------- | ------------------------------------------------------------------------------- |
