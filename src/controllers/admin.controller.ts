@@ -41,7 +41,6 @@ const updateUserRole = asyncHandler(
 
     // Affected User Activity Log
     user.addActivityLog(`Your role has been updated to: ${role} by an admin.`);
-    await user.save();
 
     res
       .status(200)
@@ -121,8 +120,6 @@ const toggleUserStatus = asyncHandler(
     user.addActivityLog(
       `Your account status has been updated to: ${userStatusType} by an admin.`
     );
-
-    await user.save();
 
     res
       .status(200)
