@@ -1,4 +1,4 @@
-# ⚡**QuickURL (URL Shortener)**
+# ⚡**SwiftLink (URL Shortener)**
 
 A backend application that enables users to generate shortened URLs for long links. The project incorporates modern web development practices, robust security measures, and advanced features for scalability and ease of use.
 
@@ -22,7 +22,7 @@ A backend application that enables users to generate shortened URLs for long lin
 
 ## 📖**Overview**
 
-The **QuickURL** project provides users with the ability to shorten long URLs, making them easier to share and manage. It uses secure authentication, rate limiting, input validation, and advanced features like URL visibility control and user-specific URL management. Admin features ensure better management of users and URLs.
+The **SwiftLink** project provides users with the ability to shorten long URLs, making them easier to share and manage. It uses secure authentication, rate limiting, input validation, and advanced features like URL visibility control and user-specific URL management. Admin features ensure better management of users and URLs.
 
 ---
 
@@ -124,7 +124,7 @@ The application will now be running at `http://localhost:8000`.
 
 ## 🤝**Contribution**
 
-We welcome contributions to **QuickURL**! If you'd like to contribute, please follow these steps:
+We welcome contributions to **SwiftLink**! If you'd like to contribute, please follow these steps:
 
 1. **Fork** the repository.
 
