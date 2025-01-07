@@ -7,6 +7,7 @@ A backend application that enables users to generate shortened URLs for long lin
 ## **Table of Contents**
 
 - [Overview](#overview)
+- [Quick Links](#quick-links)
 - [Features](#features)
   - [User Management](#user-management)
   - [URL Management](#url-management)
@@ -23,6 +24,14 @@ A backend application that enables users to generate shortened URLs for long lin
 ## 📖**Overview**
 
 The **SwiftLink** project provides users with the ability to shorten long URLs, making them easier to share and manage. It uses secure authentication, rate limiting, input validation, and advanced features like URL visibility control and user-specific URL management. Admin features ensure better management of users and URLs.
+
+---
+
+### 🌐 **Quick Links**
+
+| Resource              | Link                                                                            |
+| --------------------- | ------------------------------------------------------------------------------- |
+| **API Documentation** | [API Documentation](https://documenter.getpostman.com/view/28528757/2sAYJAdHbv) |
 
 ---
 
